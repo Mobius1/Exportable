@@ -1,0 +1,24 @@
+{
+  "name": "vanilla-datatables-exportable",
+  "version": "0.0.10",
+  "description": "A Vanilla-DataTables extension to allow for exporting to various formats.",
+  "main": "datatable.exportable.min.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mobius1/Exportable.git"
+  },
+  "keywords": [
+    "tables",
+    "html table",
+    "datatable"
+  ],
+  "author": "Karl Saunders",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mobius1/Exportable/issues"
+  },
+  "homepage": "https://github.com/Mobius1/Exportable#readme"
+}

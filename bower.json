@@ -1,0 +1,10 @@
+{
+    "name": "vanilla-datatables-exportable",
+    "version": "0.0.1",
+    "description": "A Vanilla-DataTables extension to allow for exporting to various formats.",
+    "main": "datatable.exportable.min.js",
+    "ignore": [
+        ".gitattributes",
+        "README.md"
+    ]
+}
