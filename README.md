@@ -83,7 +83,7 @@ The `replacer` parameter can be either a function or an array. As a function, it
 ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).
 
 
-### `replacer`
+### `space`
 #### type: `Number|String`
 #### default: `4`
 
