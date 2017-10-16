@@ -214,6 +214,9 @@ datatable.exportable.print();
 
 ## Changelog
 
+`v0.0.3`
+* Incorrect file names.
+
 `v0.0.2`
 * Add `modal` option for `print()` method.
 
