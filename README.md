@@ -6,6 +6,40 @@ NOTE: This extension is only compatable with `v2.0.0` and above of `Vanilla-Data
 
 ---
 
+### Install
+
+## Bower
+```
+bower install vanilla-datatables-exportable --save
+```
+
+## npm
+```
+npm install vanilla-datatables-exportable --save
+```
+
+---
+
+### Browser
+
+Grab the files from one of the CDNs and include them in your page:
+
+```html
+<link href="https://unpkg.com/vanilla-datatables-exportable@latest/datatable.exportable.min.css" rel="stylesheet" type="text/css">
+<script src="https://unpkg.com/vanilla-datatables-exportable@latest/datatable.exportable.min.js" type="text/javascript"></script>
+
+//or
+
+<link href="https://cdn.jsdelivr.net/npm/vanilla-datatables-exportable@latest/datatable.exportable.min.css" rel="stylesheet" type="text/css">
+<script src="https://cdn.jsdelivr.net/npm/vanilla-datatables-exportable@latest/datatable.exportable.min.js" type="text/javascript"></script>
+```
+
+You can replace `latest` with the required release number.
+
+NOTE: Make sure the above js file is included AFTER the main Vanilla-DataTables js file.
+
+---
+
 ## Options
 
 ```javascript
@@ -110,7 +144,7 @@ Export with given options.
 
 ```javascript
 // Export to json string
-datatable.editable.export({
+datatable.exportable.export({
     type: "json",
 });
 ```
@@ -119,7 +153,7 @@ You can also override global options:
 
 ```javascript
 // Export to json string
-datatable.editable.export({
+datatable.exportable.export({
     type: "json",
     download: false,
     space: 2
@@ -130,10 +164,10 @@ datatable.editable.export({
 Export to JSON file.
 
 ```javascript
-datatable.editable.toJSON();
+datatable.exportable.toJSON();
 
 // Export to json string
-datatable.editable.toJSON({ download: false });
+datatable.exportable.toJSON({ download: false });
 ```
 
 
@@ -141,10 +175,10 @@ datatable.editable.toJSON({ download: false });
 Export to CSV file.
 
 ```javascript
-datatable.editable.toCSV();
+datatable.exportable.toCSV();
 
 // Export to csv string
-datatable.editable.toCSV({ download: false });
+datatable.exportable.toCSV({ download: false });
 ```
 
 
@@ -152,10 +186,10 @@ datatable.editable.toCSV({ download: false });
 Export to SQL file.
 
 ```javascript
-datatable.editable.toSQL();
+datatable.exportable.toSQL();
 
 // Export to sql string
-datatable.editable.toSQL({ download: false });
+datatable.exportable.toSQL({ download: false });
 ```
 
 
@@ -163,7 +197,7 @@ datatable.editable.toSQL({ download: false });
 Print the table. This method will open a new window/tab and display a printable version of the table.
 
 ```javascript
-datatable.editable.print();
+datatable.exportable.print();
 ```
 
 
