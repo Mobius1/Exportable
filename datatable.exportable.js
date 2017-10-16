@@ -1,10 +1,10 @@
-/*! Exportable 0.0.2
+/*! Exportable 0.0.4
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.2
+ * @version     0.0.4
  * @file        datatable.editable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -161,6 +161,8 @@ if (window.DataTable) {
                 this.string = "data:text/csv;charset=utf-8," + str;
                 this.download();
             }
+
+            return str;
         };
 
         /**
