@@ -1,10 +1,10 @@
-/*! Exportable 0.0.1
+/*! Exportable 0.0.2
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.1
+ * @version     0.0.2
  * @file        datatable.editable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -40,7 +40,10 @@ if (window.DataTable) {
 
             // json
             replacer: null,
-            space: 4
+            space: 4,
+
+            // print
+            modal: true
         };
 
         var Exporter = function() {};
@@ -50,11 +53,11 @@ if (window.DataTable) {
          * @return {[type]} [description]
          */
         Exporter.prototype.init = function() {
-        	if ( !this.initialised ) {
-            	this.config = utils.extend(defaultConfig, config);
+            if ( !this.initialised ) {
+                this.config = utils.extend(defaultConfig, config);
 
-            	this.initialised = true;
-        	}
+                this.initialised = true;
+            }
         };
 
         /**
@@ -257,7 +260,12 @@ if (window.DataTable) {
          * Print table
          * @return {Void}
          */
-        Exporter.prototype.print = function() {
+        Exporter.prototype.print = function(config) {
+
+            if (config && utils.isObject(config)) {
+                this.config = utils.extend(this.config, config);
+            }
+
             var table = document.createElement("table"),
                 thead = document.createElement("thead"),
                 tbody = document.createElement("tbody");
@@ -279,9 +287,11 @@ if (window.DataTable) {
             // Append the table to the body
             w.document.body.appendChild(table);
 
-            // Print
-            w.focus(); // IE
-            w.print();
+            if ( this.config.modal ) {
+                // Print
+                w.focus(); // IE
+                w.print();
+            }
         };
 
         return new Exporter();

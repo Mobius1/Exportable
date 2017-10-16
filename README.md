@@ -127,11 +127,19 @@ The space argument may be used to control spacing in the final string. If it is 
 
 ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).
 
+
+### `modal`
+#### type: `Boolean`
+#### default: `true`
+
+Shows the print modal when calling the `print()` method. Set to `false` to just display a printable version.
+
+
 ---
 
 ## Public Methods
 
-Each of the following methods (excluding the `print()` method) accepts an optional `Object` of options as it's only parameter to configure the exporter on the fly. These options will override the global options set above.
+Each of the following methods accepts an optional `Object` of options as it's only parameter to configure the exporter on the fly. These options will override the global options set above.
 
 Methods are called using the `exportable` property of the current `Vanilla-DataTables` instance:
 
@@ -204,6 +212,9 @@ datatable.exportable.print();
 ---
 
 ## Changelog
+
+`v0.0.2`
+* Add `modal` option for `print()` method.
 
 `v0.0.1`
 * Initial commit.
