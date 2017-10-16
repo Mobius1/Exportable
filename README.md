@@ -1,4 +1,5 @@
 # Exportable
+[![npm version](https://badge.fury.io/js/vanilla-datatables-exportable.svg)](https://badge.fury.io/js/vanilla-datatables-exportable) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Mobius1/Exportable/blob/master/LICENSE) ![](http://img.badgesize.io/Mobius1/Exportable/master/datatable.exportable.min.js) ![](http://img.badgesize.io/Mobius1/Exportable/master/datatable.exportable.min.js?compression=gzip&label=gzipped)
 
 A Vanilla-DataTables extension to allow for exporting to various formats.
 
