@@ -5,6 +5,8 @@ A Vanilla-DataTables extension to allow for exporting to various formats.
 
 NOTE: This extension is only compatable with `v2.0.0` and above of `Vanilla-DataTables`.
 
+[DEMO](https://codepen.io/Mobius1/pen/QqJbmY/)
+
 ---
 
 ### Install
