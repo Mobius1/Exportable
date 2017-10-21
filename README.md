@@ -217,6 +217,13 @@ datatable.exportable.print();
 ## Changelog
 
 `v0.0.6`
+* Added `destroy()` method
+* Fix bug causing filename concatenation
+
+`v0.0.5`
+* Fix incorrect filename reference
+
+`v0.0.4`
 * Fix `toCSV()` method not returning string.
 
 `v0.0.3`
