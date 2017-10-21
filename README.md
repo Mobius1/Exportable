@@ -216,7 +216,7 @@ datatable.exportable.print();
 
 ## Changelog
 
-`v0.0.4`
+`v0.0.5`
 * Fix `toCSV()` method not returning string.
 
 `v0.0.3`
