@@ -25,15 +25,13 @@ npm install vanilla-datatables-exportable --save
 
 ### Browser
 
-Grab the files from one of the CDNs and include them in your page:
+Grab the file from one of the CDNs and include them in your page:
 
 ```html
-<link href="https://unpkg.com/vanilla-datatables-exportable@latest/datatable.exportable.min.css" rel="stylesheet" type="text/css">
 <script src="https://unpkg.com/vanilla-datatables-exportable@latest/datatable.exportable.min.js" type="text/javascript"></script>
 
 //or
 
-<link href="https://cdn.jsdelivr.net/npm/vanilla-datatables-exportable@latest/datatable.exportable.min.css" rel="stylesheet" type="text/css">
 <script src="https://cdn.jsdelivr.net/npm/vanilla-datatables-exportable@latest/datatable.exportable.min.js" type="text/javascript"></script>
 ```
 
