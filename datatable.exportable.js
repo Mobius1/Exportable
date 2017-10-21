@@ -1,10 +1,10 @@
-/*! Exportable 0.0.5
+/*! Exportable 0.0.6
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.5
+ * @version     0.0.6
  * @file        datatable.exportable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -53,7 +53,7 @@ if (window.DataTable) {
          * @return {[type]} [description]
          */
         Exporter.prototype.init = function() {
-            if ( !this.initialised ) {
+            if (!this.initialised) {
                 this.config = utils.extend(defaultConfig, config);
 
                 this.initialised = true;
@@ -237,15 +237,15 @@ if (window.DataTable) {
             // Download
             if (this.string) {
                 // Filename
-                this.config.filename = this.config.filename || "datatable_export";
-                this.config.filename += "." + this.config.type;
+                var filename = this.config.filename || "datatable_export";
+                filename += "." + this.config.type;
 
                 this.string = encodeURI(this.string);
 
                 // Create a link to trigger the download
                 var link = document.createElement("a");
                 link.href = this.string;
-                link.download = this.config.filename;
+                link.download = filename;
 
                 // Append the link
                 document.body.appendChild(link);
@@ -289,10 +289,20 @@ if (window.DataTable) {
             // Append the table to the body
             w.document.body.appendChild(table);
 
-            if ( this.config.modal ) {
+            if (this.config.modal) {
                 // Print
                 w.focus(); // IE
                 w.print();
+            }
+        };
+
+        /**
+         * Destroy instance of Exporter
+         * @return {[type]} [description]
+         */
+        Exporter.prototype.destroy = function() {
+            if (this.initialised) {
+                this.initialised = false;
             }
         };
 
