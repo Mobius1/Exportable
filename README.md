@@ -51,90 +51,21 @@ var datatable = new DataTable(myTable, {
 });
 ```
 
-### `type`
-#### type: `String`
-#### default: `undefined`
-
-The format to export to: `json`, `csv` or `sql`.
-
-### `download`
-#### type: `Boolean`
-#### default: `true`
-
-Export the table data to chosen file format. Set to false to return a string.
-
-
-### `filename`
-#### type: `String`
-#### default: `"datatable_export"`
-
-The filename for the downloaded file.
-
-
-### `skipColumns`
-#### type: `Array`
-
-A collection of column indexes to omit from the exported data.
-
-NOTE: columns hidden with the `columns()` API will be omitted by default.
-
-
-### `lineDelimiter`
-#### type: `String`
-#### default: `"\n"`
-
-The line delimiter for CSV data.
-
-
-### `columnDelimiter`
-#### type: `String`
-#### default: `","`
-
-The column delimiter for CSV data.
-
-
-### `tableName`
-#### type: `String`
-#### default: `"table"`
-
-The MySQL table name for SQL data.
-
-
-### `replacer`
-#### type: `Array|Function`
-#### default: `null`
-
-The `JSON.stringify()` replacer parameter.
-
-The `replacer` parameter can be either a function or an array. As a function, it takes two parameters, the key and the value being stringified. The object in which the key was found is provided as the replacer's `this` parameter. Initially it gets called with an empty key representing the object being stringified, and it then gets called for each property on the object or array being stringified. It should return the value that should be added to the JSON string, as follows:
-
-* If you return a `Number`, the string corresponding to that number is used as the value for the property when added to the JSON string.
-* If you return a `String`, that string is used as the property's value when adding it to the JSON string.
-* If you return a `Boolean`, "true" or "false" is used as the property's value, as appropriate, when adding it to the JSON string.
-* If you return any other object, the object is recursively stringified into the JSON string, calling the `replacer` function on each property, unless the object is a function, in which case nothing is added to the JSON string.
-* If you return `undefined`, the property is not included (i.e., filtered out) in the output JSON string.
-
-
-([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).
-
-
-### `space`
-#### type: `Number|String`
-#### default: `4`
-
-The `JSON.stringify()` space argument. 
-
-The space argument may be used to control spacing in the final string. If it is a number, successive levels in the stringification will each be indented by this many space characters (up to 10). If it is a string, successive levels will be indented by this string (or the first ten characters of it).
-
-([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).
-
-
-### `modal`
-#### type: `Boolean`
-#### default: `true`
-
-Shows the print modal when calling the `print()` method. Set to `false` to just display a printable version.
-
+| Option            | Type             | Default              | Effect                                                                                                                                                                            |
+|-------------------|------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `type`            | `string`         | `"json"`             | The format to export to: `json`, `csv` or `sql`.                                                                                                                                  |
+| `download`        | `boolean`        | `true`               | Export the table data to chosen file format. Set to false to return a `string`.                                                                                                   |
+| `escapeHTML`      | `boolean`        | `true`               | Strip HTML from the exported data.                                                                                                                                                |
+| `filename`        | `string`         | `"datatable_export"` | The filename for the downloaded file.                                                                                                                                             |
+| `skipColumns`     | `array`          | `undefined`          | A collection of column indexes to omit from the exported data.                                                                                                                    |
+| `pages`           | `number|array`   | `undefined`          | A single page or collection of pages to export. All other pages will be omitted.                                                                                                  |
+| `lineDelimiter`   | `string`         | `"\n"`               | The line delimiter for CSV data.                                                                                                                                                  |
+| `columnDelimiter` | `string`         | `","`                | The column delimiter for CSV data.                                                                                                                                                |
+| `includeHeadings` | `boolean`        | `true`               | Set the first line of the CSV string as the table headings.                                                                                                                       |
+| `tableName`       | `string`         | `"table"`            | The MySQL table name for SQL data.                                                                                                                                                |
+| `replacer`        | `array|function` | `undefined`          | The `JSON.stringify()` replacer parameter. ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)). |
+| `space`           | `number|string`  |                      | The `JSON.stringify()` space argument. ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).     |
+| `modal`           | `boolean`        | `true`               | Shows the print modal when calling the `print()` method. Set to `false` to just display a printable version.                                                                      |
 
 ---
 
@@ -213,6 +144,10 @@ datatable.exportable.print();
 ---
 
 ## Changelog
+
+`v0.0.7`
+* Allow export of headings in CSV strings ([#1](https://github.com/Mobius1/Exportable/issues/1))
+* Allow HTML to be stripped ([#1](https://github.com/Mobius1/Exportable/issues/1))
 
 `v0.0.6`
 * Added `destroy()` method

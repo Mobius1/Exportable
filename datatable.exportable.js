@@ -1,10 +1,10 @@
-/*! Exportable 0.0.6
+/*! Exportable 0.0.7
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.6
+ * @version     0.0.7
  * @file        datatable.exportable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -30,10 +30,12 @@ if (window.DataTable) {
         var defaultConfig = {
             download: true,
             skipColumns: [],
+            escapeHTML: true,
 
             // csv
             lineDelimiter: "\n",
             columnDelimiter: ",",
+            includeHeadings: true,
 
             // sql
             tableName: "table",
@@ -60,24 +62,64 @@ if (window.DataTable) {
             }
         };
 
+        Exporter.prototype.getRows = function(config) {
+            config = config || this.config;
+
+            var that = this,
+                rows = [];
+
+            // Selection or whole table
+            if (config.pages) {
+                // Page number
+                if (!isNaN(config.pages)) {
+                    rows = rows.concat(instance.pages[config.pages - 1]);
+                } else if (Array.isArray(config.pages)) {
+                    // Array of page numbers
+                    utils.each(config.pages, function(select) {
+                        rows = rows.concat(instance.pages[select - 1]);
+                    });
+                }
+            } else {
+                rows = rows.concat(instance.table.rows);
+            }
+
+            return rows;
+        };
+
+        /**
+         * Get the congif object
+         * @param  {Object} config Export options
+         * @return {Object}
+         */
+        Exporter.prototype.getConfig = function(config) {
+            if (config && utils.isObject(config)) {
+                return utils.extend(utils.extend({}, this.config), config)
+            }
+
+            return this.config;
+        };
+
+        Exporter.prototype.stripHTML = function(content) {
+            /* https://github.com/sstephenson/prototype/blob/5fddd3e/src/prototype/lang/string.js#L285 */
+            return content.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?(\/)?>|<\/\w+>/gi, '');
+        };
+
         /**
          * Export with options
          * @param  {Object} config Export options
-         * @return {[type]}        [description]
+         * @return {Void}
          */
         Exporter.prototype.export = function(config) {
-            if (config && utils.isObject(config)) {
-                this.config = utils.extend(this.config, config);
-            }
-            switch (this.config.type.toLowerCase()) {
+            config = this.getConfig(config);
+            switch (config.type.toLowerCase()) {
                 case "json":
-                    this.toJSON();
+                    this.toJSON(config);
                     break;
                 case "sql":
-                    this.toSQL();
+                    this.toSQL(config);
                     break;
                 case "csv":
-                    this.toCSV();
+                    this.toCSV(config);
                     break;
             }
         };
@@ -89,23 +131,22 @@ if (window.DataTable) {
          */
         Exporter.prototype.toJSON = function(config) {
 
-            if (config && utils.isObject(config)) {
-                this.config = utils.extend(this.config, config);
-            }
+            config = this.getConfig(config);
 
-            this.config.type = "json";
+            config.type = "json";
 
             var str = "",
                 data = [],
-                o = this.config,
-                table = instance.table;
+                o = config,
+                table = instance.table,
+                rows = this.getRows(config);
 
-            utils.each(table.rows, function(row, n) {
+            utils.each(rows, function(row, n) {
                 data[n] = data[n] || {};
 
                 utils.each(row.cells, function(cell, i) {
                     if (!cell.hidden && o.skipColumns.indexOf(cell.index) < 0) {
-                        data[n][table.header.cells[cell.index].content] = table.rows[n].cells[cell.index].content;
+                        data[n][table.header.cells[cell.index].content] = rows[n].cells[cell.index].content;
                     }
                 })
             });
@@ -113,9 +154,13 @@ if (window.DataTable) {
             // Convert the array of objects to JSON string
             str = JSON.stringify(data, o.replacer, o.space);
 
+            if (config.escapeHTML) {
+                str = this.stripHTML(str)
+            }
+
             if (o.download) {
-                this.string = "data:application/json;charset=utf-8," + str;
-                this.download();
+                str = "data:application/json;charset=utf-8," + str;
+                this.download(str, config);
             }
 
             return str;
@@ -127,18 +172,33 @@ if (window.DataTable) {
          * @return {String}        CSV string
          */
         Exporter.prototype.toCSV = function(config) {
-            if (config && utils.isObject(config)) {
-                this.config = utils.extend(this.config, config);
+            config = this.getConfig(config);
+
+            config.type = "csv";
+
+            var str = [],
+                data = [],
+                o = config,
+                table = instance.table,
+                rows = this.getRows(config);
+
+            // Headings as first row
+            if (config.includeHeadings) {
+                // Convert table headings to column names
+                utils.each(table.header.cells, function(cell) {
+                    if (!cell.hidden && o.skipColumns.indexOf(cell.index) < 0) {
+                        str += cell.content + o.columnDelimiter;
+                    }
+                });
+
+                // Remove trailing column delimiter
+                str = str.trim().substring(0, str.length - 1);
+
+                // Apply line delimiter
+                str += o.lineDelimiter;
             }
 
-            this.config.type = "csv";
-
-            var str = "",
-                data = [],
-                o = this.config,
-                table = instance.table;
-
-            utils.each(table.rows, function(row, n) {
+            utils.each(rows, function(row, n) {
                 data[n] = data[n] || {};
 
                 utils.each(row.cells, function(cell, i) {
@@ -157,9 +217,13 @@ if (window.DataTable) {
             // Remove trailing line delimiter
             str = str.trim().substring(0, str.length - 1);
 
+            if (config.escapeHTML) {
+                str = this.stripHTML(str)
+            }
+
             if (o.download) {
-                this.string = "data:text/csv;charset=utf-8," + str;
-                this.download();
+                str = "data:text/csv;charset=utf-8," + str;
+                this.download(str, config);
             }
 
             return str;
@@ -171,14 +235,13 @@ if (window.DataTable) {
          * @return {String}        SQL string
          */
         Exporter.prototype.toSQL = function(config) {
-            if (config && utils.isObject(config)) {
-                this.config = utils.extend(this.config, config);
-            }
+            config = this.getConfig(config);
 
-            this.config.type = "sql";
+            config.type = "sql";
 
-            var o = this.config,
-                table = instance.table;
+            var o = config,
+                table = instance.table,
+                rows = this.getRows(config);
 
             // Begin INSERT statement
             var str = "INSERT INTO `" + o.tableName + "` (";
@@ -197,7 +260,7 @@ if (window.DataTable) {
             str += ") VALUES ";
 
             // Iterate rows and convert cell data to column values
-            utils.each(table.rows, function(row) {
+            utils.each(rows, function(row) {
                 str += "(";
 
                 utils.each(row.cells, function(cell) {
@@ -219,9 +282,13 @@ if (window.DataTable) {
             // Add trailing colon
             str += ";";
 
+            if (config.escapeHTML) {
+                str = this.stripHTML(str)
+            }
+
             if (o.download) {
-                this.string = "data:application/sql;charset=utf-8," + str;
-                this.download();
+                str = "data:application/sql;charset=utf-8," + str;
+                this.download(str, config);
             }
 
             return str;
@@ -232,19 +299,19 @@ if (window.DataTable) {
          * @param  {String} str The formatted file contents
          * @return {Void}
          */
-        Exporter.prototype.download = function(str) {
+        Exporter.prototype.download = function(str, config) {
 
             // Download
-            if (this.string) {
+            if (str) {
                 // Filename
-                var filename = this.config.filename || "datatable_export";
-                filename += "." + this.config.type;
+                var filename = config.filename || "datatable_export";
+                filename += "." + config.type;
 
-                this.string = encodeURI(this.string);
+                str = encodeURI(str);
 
                 // Create a link to trigger the download
                 var link = document.createElement("a");
-                link.href = this.string;
+                link.href = str;
                 link.download = filename;
 
                 // Append the link
@@ -265,7 +332,7 @@ if (window.DataTable) {
         Exporter.prototype.print = function(config) {
 
             if (config && utils.isObject(config)) {
-                this.config = utils.extend(this.config, config);
+                config = utils.extend(this.config, config);
             }
 
             var table = document.createElement("table"),
@@ -289,7 +356,7 @@ if (window.DataTable) {
             // Append the table to the body
             w.document.body.appendChild(table);
 
-            if (this.config.modal) {
+            if (config.modal) {
                 // Print
                 w.focus(); // IE
                 w.print();
