@@ -11,11 +11,6 @@ NOTE: This extension is only compatable with `v2.0.0` and above of `Vanilla-Data
 
 ### Install
 
-## Bower
-```
-bower install vanilla-datatables-exportable --save
-```
-
 ## npm
 ```
 npm install vanilla-datatables-exportable --save
@@ -194,6 +189,10 @@ datatable.exportable.print();
 ---
 
 ## Changelog
+
+
+`v0.0.10`
+* Set `columnize` to `false` as default.
 
 `v0.0.9`
 * Added `toText()` method to export to text file/string;

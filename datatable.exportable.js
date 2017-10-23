@@ -1,10 +1,10 @@
-/*! Exportable 0.0.9
+/*! Exportable 0.0.10
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.9
+ * @version     0.0.10
  * @file        datatable.exportable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -36,7 +36,7 @@ if (window.DataTable) {
             lineDelimiter: "\n",
             columnDelimiter: ",",
             includeHeadings: true,
-            columnize: true,
+            columnize: false,
             paddingCharacter: " ",
 
             // sql
