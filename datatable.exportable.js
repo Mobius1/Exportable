@@ -1,10 +1,10 @@
-/*! Exportable 0.0.7
+/*! Exportable 0.0.8
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.7
+ * @version     0.0.8
  * @file        datatable.exportable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -20,6 +20,7 @@
  *
  * For details please refer to: https://github.com/Mobius1/Vanilla-DataTables
  */
+// Exportable
 if (window.DataTable) {
     DataTable.extend("exportable", function(instance, config, utils) {
 
@@ -44,6 +45,13 @@ if (window.DataTable) {
             replacer: null,
             space: 4,
 
+            // xml
+            rootNode: "Root",
+            childNode: "Child",
+
+            columnize: true,
+            paddingCharacter: " ",
+
             // print
             modal: true
         };
@@ -62,6 +70,11 @@ if (window.DataTable) {
             }
         };
 
+        /**
+         * Get the rows for exporting
+         * @param  {Object} config
+         * @return {Array}
+         */
         Exporter.prototype.getRows = function(config) {
             config = config || this.config;
 
@@ -99,9 +112,24 @@ if (window.DataTable) {
             return this.config;
         };
 
+        /**
+         * Strip HTML from string
+         * @param  {String} Raw content
+         * @return {String} Parsed content
+         */
         Exporter.prototype.stripHTML = function(content) {
             /* https://github.com/sstephenson/prototype/blob/5fddd3e/src/prototype/lang/string.js#L285 */
             return content.replace(/<\w+(\s+("[^"]*"|'[^']*'|[^>])+)?(\/)?>|<\/\w+>/gi, '');
+        };
+
+        /**
+         * Parse a heading to valid XML node name
+         * @param  {String} content
+         * @return {String}
+         */
+        Exporter.prototype.parseXMLTag = function(content) {
+            content = content.charAt(0).toUpperCase() + content.slice(1);
+            return content.replace(/\.|\s+/g, "");
         };
 
         /**
@@ -122,6 +150,97 @@ if (window.DataTable) {
                     this.toCSV(config);
                     break;
             }
+        };
+
+        /**
+         * Pad strings
+         * @param  {Object} obj
+         * @param  {String} paddingCharacter
+         * @return {Array}
+         */
+        Exporter.prototype.columnize = function(obj, paddingCharacter) {
+            var data = [];
+            utils.each(obj.strings, function(row, i) {
+                data[i] = [];
+                utils.each(row, function(str, n) {
+                    data[i][n] = str;
+
+                    if (str.length < obj.lengths[n]) {
+                        var pad = obj.lengths[n] - str.length;
+                        for (var x = 0; x < pad; x++) {
+                            data[i][n] += paddingCharacter;
+                        }
+                    }
+                });
+            });
+
+            return data;
+        };
+
+        /**
+         * Export to plain text
+         * @param  {Object} config JSON options
+         * @return {String}        JSON string
+         */
+        Exporter.prototype.toText = function(config) {
+            config = this.getConfig(config);
+
+            config.type = "txt";
+
+            var str = "",
+                data = [],
+                o = config,
+                table = instance.table,
+                rows = this.getRows(o),
+                strings = [],
+                lengths = [];
+
+            utils.each(rows, function(row, n) {
+                // Set the lengths to zero for comparison later
+                if (config.columnize && !lengths.length) {
+                    for (var x = 0; x < row.cells.length; x++) {
+                        lengths[x] = 0;
+                    }
+                }
+
+                strings[n] = [];
+
+                utils.each(row.cells, function(cell, i) {
+                    str = cell.content.trim();
+                    strings[n][i] = str;
+
+                    // Update the max length of the content
+                    if (config.columnize && str.length > lengths[i]) {
+                        lengths[i] = str.length;
+                    }
+                })
+            });
+
+            if (config.columnize) {
+                data = this.columnize({
+                    lengths: lengths,
+                    strings: strings
+                }, config.paddingCharacter);
+            } else {
+                data = strings;
+            }
+
+            str = "";
+
+            data.forEach(function(line) {
+                str += line.join(config.columnDelimiter).trim() + "\n"
+            });
+
+            if (o.escapeHTML) {
+                str = this.stripHTML(str)
+            }
+
+            if (o.download) {
+                str = "data:text/plain;charset=utf-8," + str;
+                this.download(str, config);
+            };
+
+            return str;
         };
 
         /**
@@ -154,7 +273,7 @@ if (window.DataTable) {
             // Convert the array of objects to JSON string
             str = JSON.stringify(data, o.replacer, o.space);
 
-            if (config.escapeHTML) {
+            if (o.escapeHTML) {
                 str = this.stripHTML(str)
             }
 
@@ -217,7 +336,7 @@ if (window.DataTable) {
             // Remove trailing line delimiter
             str = str.trim().substring(0, str.length - 1);
 
-            if (config.escapeHTML) {
+            if (o.escapeHTML) {
                 str = this.stripHTML(str)
             }
 
@@ -282,12 +401,51 @@ if (window.DataTable) {
             // Add trailing colon
             str += ";";
 
-            if (config.escapeHTML) {
+            if (o.escapeHTML) {
                 str = this.stripHTML(str)
             }
 
             if (o.download) {
                 str = "data:application/sql;charset=utf-8," + str;
+                this.download(str, config);
+            }
+
+            return str;
+        };
+
+        /**
+         * Export to xml
+         * @param  {Object} config XML options
+         * @return {String}        XML string
+         */
+        Exporter.prototype.toXML = function(config) {
+            config = this.getConfig(config);
+
+            config.type = "xml";
+
+            var that = this,
+                o = config,
+                table = instance.table,
+                rows = that.getRows(config);
+
+            var heading, str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><{root}>";
+
+            utils.each(rows, function(row) {
+                str += "<{child}>";
+                utils.each(row.cells, function(cell) {
+                    heading = that.parseXMLTag(table.header.cells[cell.index].content);
+                    str += "<" + heading + ">" + (o.escapeHTML ? that.stripHTML(cell.content) : cell.content) + "</" + heading + ">";
+                });
+                str += "</{child}>";
+            });
+
+            str += "</{root}>"
+
+            str = str.replace(/\{root\}/g, config.rootNode);
+            str = str.replace(/\{child\}/g, config.childNode);
+
+            if (o.download) {
+                str = "data:text/xml;charset=utf-8," + str;
                 this.download(str, config);
             }
 

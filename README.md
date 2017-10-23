@@ -51,21 +51,23 @@ var datatable = new DataTable(myTable, {
 });
 ```
 
-| Option            | Type             | Default              | Effect                                                                                                                                                                            |
-|-------------------|------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `type`            | `string`         | `"json"`             | The format to export to: `json`, `csv` or `sql`.                                                                                                                                  |
-| `download`        | `boolean`        | `true`               | Export the table data to chosen file format. Set to false to return a `string`.                                                                                                   |
-| `escapeHTML`      | `boolean`        | `true`               | Strip HTML from the exported data.                                                                                                                                                |
-| `filename`        | `string`         | `"datatable_export"` | The filename for the downloaded file.                                                                                                                                             |
-| `skipColumns`     | `array`          | `undefined`          | A collection of column indexes to omit from the exported data.                                                                                                                    |
-| `pages`           | `number|array`   | `undefined`          | A single page or collection of pages to export. All other pages will be omitted.                                                                                                  |
-| `lineDelimiter`   | `string`         | `"\n"`               | The line delimiter for CSV data.                                                                                                                                                  |
-| `columnDelimiter` | `string`         | `","`                | The column delimiter for CSV data.                                                                                                                                                |
-| `includeHeadings` | `boolean`        | `true`               | Set the first line of the CSV string as the table headings.                                                                                                                       |
-| `tableName`       | `string`         | `"table"`            | The MySQL table name for SQL data.                                                                                                                                                |
-| `replacer`        | `array|function` | `undefined`          | The `JSON.stringify()` replacer parameter. ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)). |
-| `space`           | `number|string`  |                      | The `JSON.stringify()` space argument. ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).     |
-| `modal`           | `boolean`        | `true`               | Shows the print modal when calling the `print()` method. Set to `false` to just display a printable version.                                                                      |
+| Option             | Type             | Default              | Effect                                                                                                                                                                            |
+|--------------------|------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `type`             | `string`         | `"json"`             | The format to export to: `json`, `csv` or `sql`.                                                                                                                                  |
+| `download`         | `boolean`        | `true`               | Export the table data to chosen file format. Set to false to return a `string`.                                                                                                   |
+| `escapeHTML`       | `boolean`        | `true`               | Strip HTML from the exported data.                                                                                                                                                |
+| `filename`         | `string`         | `"datatable_export"` | The filename for the downloaded file.                                                                                                                                             |
+| `skipColumns`      | `array`          | `undefined`          | A collection of column indexes to omit from the exported data.                                                                                                                    |
+| `pages`            | `number|array`   | `undefined`          | A single page or collection of pages to export. All other pages will be omitted.                                                                                                  |
+| `lineDelimiter`    | `string`         | `"\n"`               | The line delimiter for CSV or text data.                                                                                                                                                  |
+| `columnDelimiter`  | `string`         | `","`                | The column delimiter for CSV or text data.                                                                                                                                                |
+| `includeHeadings`  | `boolean`        | `true`               | Set the first line of the CSV string as the table headings.                                                                                                                       |
+| `tableName`        | `string`         | `"table"`            | The MySQL table name for SQL data.                                                                                                                                                |
+| `columnize`        | `boolean`        | `false`              | Format the text string into columns.                                                                                                                                                |
+| `paddingCharacter` | `string`         | `" "`                | The character used to pad the columns when `columnize` is enabled.                                                                                                                                               |
+| `replacer`         | `array|function` | `undefined`          | The `JSON.stringify()` replacer parameter. ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)). |
+| `space`            | `number|string`  |                      | The `JSON.stringify()` space argument. ([More info](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#The_replacer_parameter)).     |
+| `modal`            | `boolean`        | `true`               | Shows the print modal when calling the `print()` method. Set to `false` to just display a printable version.                                                                      |
 
 ---
 
@@ -98,6 +100,54 @@ datatable.exportable.export({
     download: false,
     space: 2
 });
+```
+
+### `toText()`
+Export to plain text file.
+
+```javascript
+datatable.exportable.toText();
+
+// Export to json string
+datatable.exportable.toText({ download: false });
+
+
+// Columnize the data
+datatable.exportable.toText({ columnize: true, paddingCharacter: " | " });
+
+// before:
+Conan the Barbarian|1982|Conan|
+Conan the Destroyer|1984|Conan|
+The Terminator|1984|T-800 / Terminator|
+Red Sonja|1985|Kalidor|
+Commando|1985|Colonel John Matrix|
+Raw Deal|1986|Kaminsky|
+Predator|1987|Major Alan "Dutch" Schaefer|
+The Running Man|1987|Ben Richards|
+Red Heat|1988|Captain Ivan Danko|
+Twins|1988|Julius Benedict|
+Total Recall|1990|Douglas Quaid / Hauser|
+Kindergarten Cop|1990|Detective John Kimble|
+Terminator 2: Judgment Day|1991|T-800|
+Last Action Hero|1993|Jack Slater / Himself|Also executive producer
+
+// after
+Conan the Barbarian        | 1982 | Conan                       |                        
+Conan the Destroyer        | 1984 | Conan                       |                        
+The Terminator             | 1984 | T-800 / Terminator          |                        
+Red Sonja                  | 1985 | Kalidor                     |                        
+Commando                   | 1985 | Colonel John Matrix         |                        
+Raw Deal                   | 1986 | Kaminsky                    |                        
+Predator                   | 1987 | Major Alan "Dutch" Schaefer |                        
+The Running Man            | 1987 | Ben Richards                |                        
+Red Heat                   | 1988 | Captain Ivan Danko          |                        
+Twins                      | 1988 | Julius Benedict             |                        
+Total Recall               | 1990 | Douglas Quaid / Hauser      |                        
+Kindergarten Cop           | 1990 | Detective John Kimble       |                        
+Terminator 2: Judgment Day | 1991 | T-800                       |                        
+Last Action Hero           | 1993 | Jack Slater / Himself       | Also executive producer
+
+
 ```
 
 ### `toJSON()`
@@ -144,6 +194,10 @@ datatable.exportable.print();
 ---
 
 ## Changelog
+
+`v0.0.8`
+* Added `toText()` method to export to text file/string;
+* Allow formatting (padding) of text string to columns
 
 `v0.0.7`
 * Allow export of headings in CSV strings ([#1](https://github.com/Mobius1/Exportable/issues/1))
