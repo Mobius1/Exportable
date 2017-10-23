@@ -1,10 +1,10 @@
-/*! Exportable 0.0.8
+/*! Exportable 0.0.9
  * © 2017 Karl Saunders
  */
 /**
  * @summary     Exportable
  * @description Vanilla-DataTables extension to allow for exporting to various formats
- * @version     0.0.8
+ * @version     0.0.9
  * @file        datatable.exportable.js
  * @author      Karl Saunders
  * @contact     mobius1@gmx.com
@@ -20,7 +20,6 @@
  *
  * For details please refer to: https://github.com/Mobius1/Vanilla-DataTables
  */
-// Exportable
 if (window.DataTable) {
     DataTable.extend("exportable", function(instance, config, utils) {
 
@@ -33,10 +32,12 @@ if (window.DataTable) {
             skipColumns: [],
             escapeHTML: true,
 
-            // csv
+            // csv / txt
             lineDelimiter: "\n",
             columnDelimiter: ",",
             includeHeadings: true,
+            columnize: true,
+            paddingCharacter: " ",
 
             // sql
             tableName: "table",
@@ -48,9 +49,6 @@ if (window.DataTable) {
             // xml
             rootNode: "Root",
             childNode: "Child",
-
-            columnize: true,
-            paddingCharacter: " ",
 
             // print
             modal: true
@@ -195,6 +193,11 @@ if (window.DataTable) {
                 strings = [],
                 lengths = [];
 
+            // Headings as first row
+            if (config.includeHeadings) {
+                rows.unshift(table.header);
+            }
+
             utils.each(rows, function(row, n) {
                 // Set the lengths to zero for comparison later
                 if (config.columnize && !lengths.length) {
@@ -239,48 +242,6 @@ if (window.DataTable) {
                 str = "data:text/plain;charset=utf-8," + str;
                 this.download(str, config);
             };
-
-            return str;
-        };
-
-        /**
-         * Export to json
-         * @param  {Object} config JSON options
-         * @return {String}        JSON string
-         */
-        Exporter.prototype.toJSON = function(config) {
-
-            config = this.getConfig(config);
-
-            config.type = "json";
-
-            var str = "",
-                data = [],
-                o = config,
-                table = instance.table,
-                rows = this.getRows(config);
-
-            utils.each(rows, function(row, n) {
-                data[n] = data[n] || {};
-
-                utils.each(row.cells, function(cell, i) {
-                    if (!cell.hidden && o.skipColumns.indexOf(cell.index) < 0) {
-                        data[n][table.header.cells[cell.index].content] = rows[n].cells[cell.index].content;
-                    }
-                })
-            });
-
-            // Convert the array of objects to JSON string
-            str = JSON.stringify(data, o.replacer, o.space);
-
-            if (o.escapeHTML) {
-                str = this.stripHTML(str)
-            }
-
-            if (o.download) {
-                str = "data:application/json;charset=utf-8," + str;
-                this.download(str, config);
-            }
 
             return str;
         };
@@ -342,6 +303,48 @@ if (window.DataTable) {
 
             if (o.download) {
                 str = "data:text/csv;charset=utf-8," + str;
+                this.download(str, config);
+            }
+
+            return str;
+        };
+
+        /**
+         * Export to json
+         * @param  {Object} config JSON options
+         * @return {String}        JSON string
+         */
+        Exporter.prototype.toJSON = function(config) {
+
+            config = this.getConfig(config);
+
+            config.type = "json";
+
+            var str = "",
+                data = [],
+                o = config,
+                table = instance.table,
+                rows = this.getRows(config);
+
+            utils.each(rows, function(row, n) {
+                data[n] = data[n] || {};
+
+                utils.each(row.cells, function(cell, i) {
+                    if (!cell.hidden && o.skipColumns.indexOf(cell.index) < 0) {
+                        data[n][table.header.cells[cell.index].content] = rows[n].cells[cell.index].content;
+                    }
+                })
+            });
+
+            // Convert the array of objects to JSON string
+            str = JSON.stringify(data, o.replacer, o.space);
+
+            if (o.escapeHTML) {
+                str = this.stripHTML(str)
+            }
+
+            if (o.download) {
+                str = "data:application/json;charset=utf-8," + str;
                 this.download(str, config);
             }
 

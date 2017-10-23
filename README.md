@@ -195,7 +195,7 @@ datatable.exportable.print();
 
 ## Changelog
 
-`v0.0.8`
+`v0.0.9`
 * Added `toText()` method to export to text file/string;
 * Allow formatting (padding) of text string to columns
 
